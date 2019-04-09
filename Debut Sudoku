@@ -142,4 +142,17 @@ def solution(G):
         if est_valide_finale(G,k,Lposition):
             return G
     
-
+def exclusion_ligne(G,i):
+    exclusion=np.array([[0,-1] for l in range(9)])
+    for j in range(9):
+        for k in possibilite(G,i,j):
+            exclusion[k-1,0]+=1
+            if exclusion[k-1,0]==1:
+                exclusion[k-1,1]=j
+            else :
+                exclusion[k-1,1]=-1
+    for j in range(9):
+        indice_seul=exclusion[j,1]
+        if indice_seul!=-1:
+            G[i,indice_seul]=j+1
+    return G
