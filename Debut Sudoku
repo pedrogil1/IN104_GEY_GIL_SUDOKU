@@ -1,5 +1,9 @@
-"Hello World"
-"bien inscrit merci Pedro <3"
+import numpy as np
+
+
+#on stocke les grillles sous forme de matrice.
+
+
 grille=np.array([\
 [9,0,0,1,0,0,0,0,5],\
 [0,0,5,0,9,0,2,0,1],\
@@ -10,3 +14,132 @@ grille=np.array([\
 [2,0,0,3,0,0,0,0,6],\
 [0,0,0,2,0,0,9,0,0],\
 [0,0,1,9,0,4,5,7,0]])
+
+facile=np.array([\
+[0,4,0,9,6,0,0,3,0],\
+[6,1,0,7,0,3,4,0,9],\
+[0,3,2,0,8,4,0,7,5],\
+[0,0,4,0,0,0,0,0,7],\
+[2,9,0,0,0,0,0,8,4],\
+[8,0,0,0,0,0,2,0,0],\
+[1,2,0,4,9,0,8,5,0],\
+[4,0,9,6,0,5,0,1,3],\
+[0,7,0,0,3,1,0,4,0]])
+
+def pos(i,j):
+    i+=1
+    j+=1
+    p=9*i+j
+    
+def position_to_indices(p):
+    i=p//9
+    j=p%9
+    return i,j
+
+def ligne(p):
+    return p%9
+    
+def colonne(p):
+    return p%9
+
+
+
+def possibilite_sur_ligne(G,i,j):
+    if G[i,j]!=0:
+        return []
+    possible=[]
+    for k in range(1,10):
+        if k not in G[i]:
+            possible.append(k)
+    return possible
+
+
+def possibilite_sur_colonne(G,i,j):
+    if G[i,j]!=0:
+        return []
+    possible=[]
+    for k in range(1,10):
+        if k not in G[:,j]:
+            possible.append(k)
+    return possible
+
+def possibilite_sur_carre(G,i,j):
+    if G[i,j]!=0:
+        return []
+    p=3*(i//3)
+    q=3*(j//3)
+    possible=[]
+    for k in range(1,10):
+        if k not in G[p:p+3 , q:q+3]:
+            possible.append(k)
+    return possible
+
+
+def possibilite(G,i,j):
+    pL=possibilite_sur_ligne(G,i,j)
+    pC=possibilite_sur_colonne(G,i,j)
+    pS=possibilite_sur_carre(G,i,j)
+    possible=[]
+    n=len(pL)
+    for k in range(n):
+        if pL[k] in pC :
+            if pL[k] in pS:
+                possible.append(pL[k])
+    return possible
+
+def resolution_simple(G):
+    c=1
+    while c!=0:
+        c=0
+        for i in range(9):
+            for j in range(9):
+                possible=possibilite(G,i,j)
+                if len(possible)==1:
+                    G[i,j]=possible[0]
+                    c+=1
+    return G
+
+#permet de classer les cases selon le nombre de possibilités pour améliorer le backtracking
+def analyse(G):
+    possible=[0]*81
+    for k in range(81) :
+        i,j=position_to_indices(k)
+        for l in possibilite(G,i,j):
+                possible[k]+=1
+                
+    return possible
+    
+def insertsort(Lpossible):
+    Lposition=[i for i in range(81)]
+    n=len(Lpossible)
+    for k in range(1,n):
+        j=k
+        while (j>0) and (Lpossible[j]<Lpossible[j-1]):
+            Lpossible[j],Lpossible[j-1]=Lpossible[j-1],Lpossible[j]
+            Lposition[j],Lposition[j-1]=Lposition[j-1],Lposition[j]
+            j-=1
+    return Lposition
+
+def est_valide_finale(G,position,Lposition):
+    #position terminale
+    if position>=81:
+        return True
+    #case examinée
+    i,j=position_to_indices(Lposition[position])
+    #test si la case est occupé
+    if G[i,j]!=0 :
+        return est_valide_finale(G,position+1,Lposition)
+    for k in possibilite(G,i,j):
+        G[i,j]=k
+        if est_valide_finale(G,position+1,Lposition):
+            return True
+    G[i,j]=0
+    return False
+            
+def solution(G):
+    Lposition=insertsort(analyse(G))
+    for k in range(81):
+        if est_valide_finale(G,k,Lposition):
+            return G
+    
+
