@@ -11,44 +11,62 @@ grille=np.array([\
 [0,0,0,2,0,0,9,0,0],\
 [0,0,1,9,0,4,5,7,0]])
 
-def open_sudoku():
-        file=input("Nom du fichier ")
-        file=open(file,encoding="utf-8 -*-")
-        tableau=file.readlines()
-        file.close()
-        n=len(tableau)
-        print(tableau[n-9:])
-        global sudoku
-        sudoku=np.array([])
-        for i in range(n-9,n):
-                ligne=np.array([0 for k in range(9)])
-                for j in range(9):
-                        ligne[j]=int(tableau[i][j])
-                sudoku=np.array([sudoku,ligne])
-        print("Open !")
-        draw_grid(canvas)
+import tkinter as tk
+import numpy as np
+import main
 
+##Menu
+def ouvrir():
+	file=input("Nom du fichier ")
+	file=open(file,encoding="utf-8 -*-")
+	tableau=file.readlines()
+	file.close()
+	n=len(tableau)
+	print(tableau[n-9:])
+	global sudoku
+	sudoku=[]
+	for i in range(n-9,n):
+		lignetableau=tableau[i].strip()
+		lignetableau=lignetableau.split(",")
+		ligne=[0 for k in range(9)]
+		for j in range(len(lignetableau)):
+			ligne[j]=int(lignetableau[j])
+		sudoku.append(ligne)
+	print("Open !")
+	sudoku=np.array(sudoku)
+	draw_sudoku(canvas,sudoku)
+	
 
 def save():
-    print("Save !")
 
-def solve(canva,G):
-        print("Solve !")
-        draw_sudoku(canva,G)
-        return G
+	print("Save !")
 
+def solve():
+	grille=main.solution(sudoku)
+	print("Solve !")
+	draw_sudoku(canvas,grille)
+	
+
+
+	
+
+##Canevas
+
+height = 450
+width  = 450
+size_square = 50
 
 def initWin(window):
-        canvas = tk.Canvas(window,width=width,height=height)
-        canvas.pack()
-        menu_bar = tk.Menu(window)
-        filemenu = tk.Menu(menu_bar)
-        filemenu.add_command(label="Open", command=open_sudoku)
-        filemenu.add_command(label="Save", command=save)
-        filemenu.add_command(label="Solve", command=solve)
-        menu_bar.add_cascade(label="Call Ugo", menu=filemenu)
-        window.config(menu=menu_bar)
-        return canvas
+	menu_bar = tk.Menu(window)
+	filemenu = tk.Menu(menu_bar)
+	filemenu.add_command(label="Open", command=ouvrir)
+	filemenu.add_command(label="Save", command=save)
+	filemenu.add_command(label="Solve", command=solve)
+	menu_bar.add_cascade(label="File", menu=filemenu)
+	window.config(menu=menu_bar)
+	canvas = tk.Canvas(window,width=width,height=height)
+	canvas.pack()
+	return  canvas
 
 def draw_grid(canvas):
 	for i in range(0,10):
@@ -65,21 +83,17 @@ def clear_grid(canvas):
 
 
 def draw_sudoku(canvas,G):
-        Q=np.copy(G)
-        G_resolu=sudoku1.solution2(Q)
-        for i in range(9):
-                for j in range(9):
-                        if G[i,j]!=0:
-                                canvas.create_text((2*j+1)*size_square/2,(2*i+1)*size_square/2,text=str(G[i,j]))
-                                if G[i,j]==0 :
-                                        canvas.create_text((2*j+1)*size_square/2,(2*i+1)*size_square/2,text=str(G_resolu[i,j]),fill='red') 
-
+        for i in range(len(G)):
+                for j in range(len(G[1])):
+                        if (G[i][j] != 0):
+                                canvas.create_text(size_square/2+50*j,size_square/2+50*i,text=str(G[i][j]))
 
 if __name__ == '__main__':
 	
 	window = tk.Tk()
 	canvas = initWin(window)
-	#draw_grid(canvas)
+	draw_grid(canvas)
+	ouvrir()
+	#grille=solve(sudoku)
 	#draw_sudoku(canvas,grille)
-
 	window.mainloop()
