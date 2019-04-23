@@ -3,6 +3,16 @@ import numpy as np
 
 #on stocke les grillles sous forme de matrice.
 
+ludo=np.array([\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,3,0,8,5],\
+[0,0,1,0,2,0,0,0,0],\
+[0,0,0,5,0,7,0,0,0],\
+[0,0,4,0,0,0,1,0,0],\
+[0,9,0,0,0,0,0,0,0],\
+[5,0,0,0,0,0,0,7,3],\
+[0,0,2,0,1,0,0,0,0],\
+[0,0,0,0,4,0,0,0,9]])
 
 grille=np.array([\
 [9,0,0,1,0,0,0,0,5],\
@@ -25,6 +35,63 @@ facile=np.array([\
 [1,2,0,4,9,0,8,5,0],\
 [4,0,9,6,0,5,0,1,3],\
 [0,7,0,0,3,1,0,4,0]])
+
+moyen=np.array([\
+[0,2,0,0,9,0,4,0,0],\
+[0,0,5,7,0,0,0,0,0],\
+[1,8,0,0,5,4,6,0,0],\
+[2,0,0,0,0,5,1,4,0],\
+[9,0,0,4,0,3,0,0,6],\
+[0,4,6,2,0,0,0,0,7],\
+[0,0,2,6,4,0,0,1,9],\
+[0,0,0,0,0,9,2,0,0],\
+[0,0,9,0,1,0,0,3,0]])
+
+diff=np.array([\
+[0,0,0,2,0,6,5,4,0],\
+[0,2,0,8,0,0,0,0,0],\
+[0,9,4,7,0,0,6,0,0],\
+[0,0,8,0,0,5,0,7,4],\
+[0,0,0,0,0,0,0,0,0],\
+[5,7,0,1,0,0,3,0,0],\
+[0,0,3,0,0,7,2,9,0],\
+[0,0,0,0,0,1,0,8,0],\
+[0,8,1,3,0,9,0,0,0]])
+
+extreme=np.array([\
+[1,0,0,0,0,7,0,9,0],\
+[0,3,0,0,2,0,0,0,8],\
+[0,0,9,6,0,0,5,0,0],\
+[0,0,5,3,0,0,9,0,0],\
+[0,1,0,0,8,0,0,0,2],\
+[6,0,0,0,0,4,0,0,0],\
+[3,0,0,0,0,0,0,1,0],\
+[0,4,0,0,0,0,0,0,7],\
+[0,0,7,0,0,0,3,0,0]])
+
+antiback=np.array([\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,3,0,8,5],\
+[0,0,1,0,2,0,0,0,0],\
+[0,0,0,5,0,7,0,0,0],\
+[0,0,4,0,0,0,1,0,0],\
+[0,9,0,0,0,0,0,0,0],\
+[5,0,0,0,0,0,0,7,3],\
+[0,0,2,0,1,0,0,0,0],\
+[0,0,0,0,4,0,0,0,9]])
+
+zero=np.zeros((9,9),dtype=int)
+
+zz=np.array([\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,8,0,0,0,0],\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,0,0,0,0],\
+[0,0,0,0,0,0,0,0,0]])
 
 def pos(i,j):
     i+=1
@@ -99,7 +166,8 @@ def resolution_simple(G):
                     c+=1
     return G
 
-#permet de classer les cases selon le nombre de possibilités pour améliorer le backtracking
+#permet de classer les cases selon le nombre de possibilites pour ameliorer le backtracking
+
 def analyse(G):
     possible=[0]*81
     for k in range(81) :
@@ -108,7 +176,9 @@ def analyse(G):
                 possible[k]+=1
                 
     return possible
-    
+
+#algorithme de tri utilise : tri par insertion
+
 def insertsort(Lpossible):
     Lposition=[i for i in range(81)]
     n=len(Lpossible)
@@ -124,9 +194,9 @@ def est_valide_finale(G,position,Lposition):
     #position terminale
     if position>=81:
         return True
-    #case examinée
+    #case examinee
     i,j=position_to_indices(Lposition[position])
-    #test si la case est occupé
+    #test si la case est occupe
     if G[i,j]!=0 :
         return est_valide_finale(G,position+1,Lposition)
     for k in possibilite(G,i,j):
@@ -137,13 +207,16 @@ def est_valide_finale(G,position,Lposition):
     return False
             
 def solution(G):
+    G=resolution_simple(G)
     Lposition=insertsort(analyse(G))
     for k in range(81):
         if est_valide_finale(G,k,Lposition):
             return G
-    
+
+#methodes par exclusion
+
 def exclusion_ligne(G,i):
-    exclusion=np.array([[0,-1] for l in range(9)])
+    exclusion=np.array([[0,-1] for l in range(9)]) # on cree une matrice 9x2 avec 1ere colonne qui grace a l'indice de la ligne garde en memoire si un chiffre est possible dans la 2e colonne, on stocke l'indice de la colonne de la grille ou il y a une unique possibilite comme ca on ne fait pas trop de parcours de listes.
     for j in range(9):
         for k in possibilite(G,i,j):
             exclusion[k-1,0]+=1
@@ -156,3 +229,85 @@ def exclusion_ligne(G,i):
         if indice_seul!=-1:
             G[i,indice_seul]=j+1
     return G
+
+def exclusion_colonne(G,j):
+    exclusion=np.array([[0,-1] for l in range(9)])
+    for i in range(9):
+        for k in possibilite(G,i,j):
+            exclusion[k-1,0]+=1
+            if exclusion[k-1,0]==1:
+                exclusion[k-1,1]=i
+            else :
+                exclusion[k-1,1]=-1
+    for i in range(9):
+        indice_seul=exclusion[i,1]
+        if indice_seul!=-1:
+            G[indice_seul,j]=i+1
+    return G
+
+def exclusion_carre(G,r,s):
+    p=3*(r//3)
+    q=3*(s//3)
+    exclusion=np.array([[0,-1,-1] for l in range(9)])
+    for i in range(p,p+3):
+        for j in range(q,q+3):
+            for k in possibilite(G,i,j):
+                exclusion[k-1,0]+=1
+                if exclusion[k-1,0]==1:
+                    exclusion[k-1,1]=i
+                    exclusion[k-1,2]=j
+                else :
+                    exclusion[k-1,1]=-1
+                    exclusion[k-1,2]=-1
+    for k in range(9):
+        i=exclusion[k,1]
+        j=exclusion[k,2]
+        if i!=-1:
+            G[i,j]=k+1
+    return G
+
+ 
+ligne=np.array([[0,1,2,3,4,5,6,7,8]])
+colonne=np.transpose(ligne)
+carre=np.array([[1,2,3],[4,0,6],[7,8,9]])
+
+
+#resolution avec methode par exclusion
+def resolution_medium(G):
+    c=1
+    while c!=0:
+        c=0
+        for i in range(9):
+            for j in range(9):
+                possible=possibilite(G,i,j)
+                if len(possible)==1:
+                    G[i,j]=possible[0]
+                    c+=1
+                Q=np.copy(G) 
+                G=exclusion_ligne(G,i)
+                G=exclusion_colonne(G,j)
+                G=exclusion_carre(G,i,j)
+                if np.array_equal(G,Q)==False:
+                    c+=1
+    return G
+
+def solution2(G): #avec methodes par exclusion et tri pour backtracking.
+    G=resolution_medium(G)
+    Lposition=insertsort(analyse(G))
+    for k in range(81):
+        if est_valide_finale(G,k,Lposition):
+            return G
+
+# cette fonction permet de verifier si la grille est correcte
+def verification(G):
+    one=[1 for i in range(9)]
+    for i in range(9):
+        verif=[0 for i in range(9)]
+        for j in range(9):
+            verif[G[i,j]-1]+=1
+        if verif!=one:
+            return False
+    return True
+
+                    
+
