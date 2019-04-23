@@ -10,3 +10,76 @@ grille=np.array([\
 [2,0,0,3,0,0,0,0,6],\
 [0,0,0,2,0,0,9,0,0],\
 [0,0,1,9,0,4,5,7,0]])
+
+def open_sudoku():
+        file=input("Nom du fichier ")
+        file=open(file,encoding="utf-8 -*-")
+        tableau=file.readlines()
+        file.close()
+        n=len(tableau)
+        print(tableau[n-9:])
+        global sudoku
+        sudoku=np.array([])
+        for i in range(n-9,n):
+                ligne=np.array([0 for k in range(9)])
+                for j in range(9):
+                        ligne[j]=int(tableau[i][j])
+                sudoku=np.array([sudoku,ligne])
+        print("Open !")
+        draw_grid(canvas)
+
+
+def save():
+    print("Save !")
+
+def solve(canva,G):
+        print("Solve !")
+        draw_sudoku(canva,G)
+        return G
+
+
+def initWin(window):
+        canvas = tk.Canvas(window,width=width,height=height)
+        canvas.pack()
+        menu_bar = tk.Menu(window)
+        filemenu = tk.Menu(menu_bar)
+        filemenu.add_command(label="Open", command=open_sudoku)
+        filemenu.add_command(label="Save", command=save)
+        filemenu.add_command(label="Solve", command=solve)
+        menu_bar.add_cascade(label="Call Ugo", menu=filemenu)
+        window.config(menu=menu_bar)
+        return canvas
+
+def draw_grid(canvas):
+	for i in range(0,10):
+		if i%3 == 0:
+			canvas.create_line(i*size_square, 0,i*size_square, size_square*9,width=3)
+			canvas.create_line(0,i*size_square, size_square*9,i*size_square,width=3)
+		else:
+			canvas.create_line(i*size_square, 0,i*size_square, size_square*9,width=1)
+			canvas.create_line(0,i*size_square, size_square*9,i*size_square,width=1)
+
+def clear_grid(canvas):
+	canvas.delete("all")
+	draw_grid(canvas)
+
+
+def draw_sudoku(canvas,G):
+        Q=np.copy(G)
+        G_resolu=sudoku1.solution2(Q)
+        for i in range(9):
+                for j in range(9):
+                        if G[i,j]!=0:
+                                canvas.create_text((2*j+1)*size_square/2,(2*i+1)*size_square/2,text=str(G[i,j]))
+                                if G[i,j]==0 :
+                                        canvas.create_text((2*j+1)*size_square/2,(2*i+1)*size_square/2,text=str(G_resolu[i,j]),fill='red') 
+
+
+if __name__ == '__main__':
+	
+	window = tk.Tk()
+	canvas = initWin(window)
+	#draw_grid(canvas)
+	#draw_sudoku(canvas,grille)
+
+	window.mainloop()
