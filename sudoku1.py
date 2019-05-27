@@ -250,7 +250,7 @@ def solution(G):
     Lposition=insertsort(analyse(G))
     for k in range(81):
         if est_valide_finale(G,k,Lposition):
-            return G,time()-debut
+            return G
 
 ########################
 #methodes par exclusion#
@@ -345,7 +345,7 @@ def solution2(G):
     Lposition=insertsort(analyse(G))
     for k in range(81):
         if est_valide_finale(G,k,Lposition):
-            return G,time()-debut
+            return G
         
 ################################################
 #implementation de forcage par n-uplet exclusif#
@@ -468,7 +468,7 @@ def solution3(G):
     Lposition=insertsort(analyse(G))
     for k in range(81):
         if est_valide_finale(G,k,Lposition):
-            return G,time()-debut
+            return G
 
 ###################
 #Fonctions annexes#
